@@ -1,0 +1,6 @@
+task: hronka_generative
+dataset_path: maaxap/uner_debug
+include: "_template_yaml"
+test_split: test
+doc_to_text: ...
+doc_to_target: label

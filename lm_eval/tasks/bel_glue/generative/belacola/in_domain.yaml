@@ -1,0 +1,7 @@
+task: belacola_in_domain_generative
+dataset_path: maaxap/belacola_debug
+dataset_name: "in_domain"
+include: "../_template_yaml"
+test_split: test
+doc_to_text: "Passage: {{ sentence }}\nQuestion: Is the passage above linguistically acceptable? Output strictly a single number: '1' if yes, '0' otherwise.\nAnswer:"
+doc_to_target: label

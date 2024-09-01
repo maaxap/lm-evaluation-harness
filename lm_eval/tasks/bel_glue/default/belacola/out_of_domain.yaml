@@ -1,0 +1,9 @@
+task: belacola_out_of_domain
+dataset_path: maaxap/belacola_debug
+dataset_name: "out_of_domain"
+include: "../_template_yaml"
+test_split: test
+doc_to_text: "Passage: {{ sentence }}\nQuestion: Is the passage above linguistically acceptable? Output a single number: '1' if yes, '0' otherwise.\nAnswer:"
+doc_to_target: label
+doc_to_choice: ["0", "1"]
+

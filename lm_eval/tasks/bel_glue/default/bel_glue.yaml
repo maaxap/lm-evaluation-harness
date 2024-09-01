@@ -1,0 +1,9 @@
+group: bel_glue
+task:
+  - hronka
+  - bewic
+  - besls
+  - belacola_in_domain
+  - belacola_out_of_domain
+metadata:
+  version: 1.0
