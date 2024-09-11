@@ -1,8 +1,9 @@
 group: bel_glue_generative
 task:
-  - hronka_generative
+  - bewsc_generative
   - bewic_generative
   - besls_generative
+  - bertewd_generative
   - belacola_in_domain_generative
   - belacola_out_of_domain_generative
 metadata:

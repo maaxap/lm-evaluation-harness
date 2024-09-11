@@ -1,4 +1,6 @@
 import builtins
+import json
+import re
 
 from lm_eval.api.filter import Filter
 from lm_eval.api.registry import register_filter
@@ -58,8 +60,8 @@ class MapFilter(Filter):
         return [filter_set(resp) for resp in resps]
 
 
-@register_filter("cast_dtype")
-class CastDtypeFilter(Filter):
+@register_filter("cast_to_dtype")
+class CastToDtypeFilter(Filter):
     def __init__(self, dtype: str) -> None:
         """
         Initializes the CastDtypeFilter with a given data type.
@@ -71,6 +73,8 @@ class CastDtypeFilter(Filter):
         Example:
         caster = CastDtypeFilter('int')
         """
+        super().__init__()
+
         assert dtype in {
             "int",
             "float",
@@ -86,10 +90,42 @@ class CastDtypeFilter(Filter):
             "frozenset",
             "dict",
         }, f"Provided dtype is not a valid built-in Python data type: {dtype}"
+
         self.dtype = getattr(builtins, dtype, None)
 
     def apply(self, resps, docs):
-        def cast_dtype(inst):
+        def cast_to_dtype(inst):
             return [self.dtype(resp) for resp in inst]
 
-        return [cast_dtype(resp) for resp in resps]
+        return [cast_to_dtype(resp) for resp in resps]
+
+
+@register_filter("parse_json_markdown")
+class ParseJsonMarkdownFilter(Filter):
+    JSON_MARKDOWN_PATTERN = re.compile(r"```(json)?(.*)```", re.DOTALL)
+
+    @staticmethod
+    def _parse_json_markdown(json_string):
+        # Borrowed from
+        #   https://github.com/langchain-ai/langchain/blob/master/libs/core/langchain_core/utils/json.py#L124
+        try:
+            return json.loads(json_string)
+        except json.JSONDecodeError as e:
+            # Try to find JSON string within triple backticks
+            match = ParseJsonMarkdownFilter.JSON_MARKDOWN_PATTERN.search(json_string)
+
+            # If no match found, raise error
+            if match is None:
+                raise e
+
+            # If match found, use the content within the backticks
+            json_string = match.group(2)
+            json_string = json_string.strip()
+
+            return json.loads(json_string)
+
+    def apply(self, resps, docs):
+        def parse_json(inst):
+            return [self._parse_json_markdown(resp) for resp in inst]
+
+        return [parse_json(resp) for resp in resps]

@@ -2,6 +2,7 @@ output_type: generate_until
 generation_kwargs:
   temperature: 0.0
 test_split: test
+should_decontaminate: true
 filter_list:
   - name: "score-first"
     filter:

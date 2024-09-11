@@ -1,8 +1,9 @@
 group: bel_glue
 task:
-  - hronka
+  - bewsc
   - bewic
   - besls
+  - bertewd
   - belacola_in_domain
   - belacola_out_of_domain
 metadata:

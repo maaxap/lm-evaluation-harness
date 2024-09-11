@@ -1,0 +1,8 @@
+task: bertewd
+dataset_path: maaxap/bertewd
+include: "_template_yaml"
+test_split: test
+doc_to_text: "Text: {{ text }}\nHypothesis: {{ hypothesis }}\nQuestion: Does the text above entail the hypothesis? Output a single number: '1' if yes, '0' if no.\nAnswer:"
+doc_to_target: label
+doc_to_choice: ["0", "1"]
+doc_to_decontamination_query: "{{ text }} {{ hypothesis }}"
