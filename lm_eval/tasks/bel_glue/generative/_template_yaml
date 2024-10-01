@@ -2,6 +2,9 @@ output_type: generate_until
 generation_kwargs:
   temperature: 0.0
 test_split: test
+fewshot_split: validation
+fewshot_config:
+  sampler: first_n
 should_decontaminate: true
 filter_list:
   - name: "score-first"
@@ -11,6 +14,6 @@ filter_list:
         dtype: int
       - function: "take_first"
 metric_list:
-  - metric: f1  # passthrough metric, no calculations are done on this step
-    aggregation: f1
-    higher_is_better: true
+  - metric: f1
+  - metric: acc
+  - metric: mcc

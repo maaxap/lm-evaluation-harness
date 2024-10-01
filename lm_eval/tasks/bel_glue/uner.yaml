@@ -1,18 +1,30 @@
-task: bel_uner
+task: bel_glue_uner
 dataset_path: maaxap/uner_debug
 output_type: generate_until
 generation_kwargs:
   temperature: 0.0
 test_split: test
+fewshot_split: validation
+fewshot_config:
+  sampler: first_n
 doc_to_text: !function utils.doc_to_text
 doc_to_target: !function utils.doc_to_target
+doc_to_decontamination_query: "{{ raw_text }}"
+
 filter_list:
   - name: "score-first"
     filter:
       - function: "parse_json_markdown"
       - function: "take_first"
 metric_list:
-  - metric: f1
+  - metric: !function utils.conlleval_f1
     aggregation: mean
     higher_is_better: true
-    hf_evaluate: true
+
+  - metric: !function utils.conlleval_acc
+    aggregation: mean
+    higher_is_better: true
+
+  - metric: !function utils.conlleval_acc_non0
+    aggregation: mean
+    higher_is_better: true
