@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 
-UNER_PROMPT = """You are an NER model trained to label sequences using BIO tags. The entities you need to recognize are "LOC" for locations, "ORG" for organizations, "PER" for persons, and "OTH" for other entities. The input will be a list of words, and your task is to output a list with the corresponding tags. Use "B-" for the beginning of an entity, "I-" for inside an entity, and "O" for outside any entity. The output has to be a valid JSON list without any additional prefixes. Strictly follow the output format.
+UNER_PROMPT = """You are a NER model trained to label sequences using BIO tags. The entities you need to recognize are "LOC" for locations, "ORG" for organizations, "PER" for persons, and "OTH" for other entities. The input will be a list of words, and your task is to output a list with the corresponding tags. Use "B-" for the beginning of an entity, "I-" for inside an entity, and "O" for outside any entity. The output has to be a valid JSON list without any additional prefixes. Number of elements in the input and output lists has to be strictly the same. Strictly follow the output format.
 
 Examples:
 

@@ -106,7 +106,7 @@ class ParseJsonMarkdownFilter(Filter):
 
     @staticmethod
     def _parse_json_markdown(json_string):
-        # Borrowed from
+        # The implementation is borrowed from
         #   https://github.com/langchain-ai/langchain/blob/master/libs/core/langchain_core/utils/json.py#L124
         try:
             return json.loads(json_string)

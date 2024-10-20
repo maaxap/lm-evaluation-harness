@@ -1,5 +1,5 @@
 task: bel_glue_uner
-dataset_path: maaxap/uner_debug
+dataset_path: maaxap/uner
 output_type: generate_until
 generation_kwargs:
   temperature: 0.0
