@@ -1,32 +1,93 @@
+import re
+import string
 from collections import defaultdict
 
-
-UNER_PROMPT = """You are a NER model trained to label sequences using BIO tags. The entities you need to recognize are "LOC" for locations, "ORG" for organizations, "PER" for persons, and "OTH" for other entities. The input will be a list of words, and your task is to output a list with the corresponding tags. Use "B-" for the beginning of an entity, "I-" for inside an entity, and "O" for outside any entity. The output has to be a valid JSON list without any additional prefixes. Number of elements in the input and output lists has to be strictly the same. Strictly follow the output format.
-
-Examples:
-
-Input: ["Apple", "is", "based", "in", "California", "."]
-Output: ["B-ORG", "O", "O", "O", "B-LOC", "O"]
-
-Input: ["Barack", "Obama", "was", "born", "in", "Hawaii", "."]
-Output: ["B-PER", "I-PER", "O", "O", "O", "B-LOC", "O"]
-
-Task: Label the following sequence.
-
-Input: {tokens}
-Output:"""
+import numpy as np
 
 
-def doc_to_text(doc):
-    tokens = doc["tokens"].split()
-    text = UNER_PROMPT.format(tokens=tokens)
+UNER_EN_PROMPT = """Identify entities in Belarusian text. When asked about "чалавек", "арганізацыя", "месца", or "іншая іменаваная сутнасць", find the matching entity in the given text. Always provide an answer. The answer must have a single entity. Output it the same as it is mentioned in the text.
+
+What entity of type {label} is found in the following text?
+{text}
+
+Entity of type {label}:"""
+
+
+UNER_BE_PROMPT = """Твая задача – знаходзіць іменаваныя сутнасці ў тэксце на беларускай мове. Калі пытаюць пра іменаваную сутнасць тыпу "чалавек", "арганізацыя", "месца" або "іншая іменаваная сутнасць", трэба знайсці адпаведную іменаваную сутнасць у дадзеным тэксце і вывесці як адказ. Заўсёды давай адказ. Адказ павінен утрымліваць адзіную сутнасць. Падавай яе так, як згадана ў тэксце.
+
+Якая іменаваная сутнасць тыпу {label} ёсць ў наступным тэксце?
+{text}
+
+Іменаваная сутнасць тыпу {label}:"""
+
+
+def doc_to_text_en(doc):
+    text = doc["text"]
+    label = doc["label"]
+    text = UNER_EN_PROMPT.format(text=text, label=label)
+    return text
+
+def doc_to_text_be(doc):
+    text = doc["text"]
+    label = doc["label"]
+    text = UNER_BE_PROMPT.format(text=text, label=label)
     return text
 
 
 def doc_to_target(doc):
-    labels = doc["labels"].split()
-    return [labels]
+    # TODO: dump the answers with json.dumps before loading to HF
+    # return json.loads(doc["answers"])
+    answers = eval(doc["answers"])
+    return list(set(answers))
 
+
+def intersection(
+    predictions,
+    references,
+    regexes_to_ignore=None,
+    ignore_case=False,
+    ignore_punctuation=False,
+    ignore_numbers=False,
+):
+    if regexes_to_ignore is not None:
+        for s in regexes_to_ignore:
+            predictions = np.array([re.sub(s, "", x) for x in predictions])
+            references = np.array([re.sub(s, "", x) for x in references])
+    else:
+        predictions = np.asarray(predictions)
+        references = np.asarray(references)
+
+    if ignore_case:
+        predictions = np.char.lower(predictions)
+        references = np.char.lower(references)
+
+    if ignore_punctuation:
+        repl_table = string.punctuation.maketrans("", "", string.punctuation)
+        predictions = np.char.translate(predictions, table=repl_table)
+        references = np.char.translate(references, table=repl_table)
+
+    if ignore_numbers:
+        repl_table = string.digits.maketrans("", "", string.digits)
+        predictions = np.char.translate(predictions, table=repl_table)
+        references = np.char.translate(references, table=repl_table)
+
+    intersection = set(predictions) & set(references)
+    score = int(len(intersection) > 0)
+
+    return {"intersection": score}
+
+
+def at_least_one_match(items):
+    unzipped_list = list(zip(*items))
+    golds = unzipped_list[0]
+    preds = unzipped_list[1]
+
+    scores = [int(pred in gold) for gold, pred in zip(golds, preds)]
+
+    return sum(scores) / len(scores)
+
+
+# TO DELETE EVERYTHING BELOW
 
 # Source of the code below can be found here:
 # https://github.com/sighsmile/conlleval
