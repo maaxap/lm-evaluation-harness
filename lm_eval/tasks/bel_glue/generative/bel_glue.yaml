@@ -1,10 +1,22 @@
 group: bel_glue_generative
 task:
-  - bewsc_generative
-  - bewic_generative
-  - besls_generative
-  - bertewd_generative
-  - belacola_in_domain_generative
-  - belacola_out_of_domain_generative
-metadata:
-  version: 1.0
+  - group: zero_shot_be
+    task:
+      - bewsc_generative_zero_shot_be
+      - bewic_generative_zero_shot_be
+      - besls_generative_zero_shot_be
+      - bertewd_generative_zero_shot_be
+      - belacola_in_domain_generative_zero_shot_be
+      - belacola_out_of_domain_generative_zero_shot_be
+    metadata:
+      version: 1.0
+  - group: zero_shot_en
+    task:
+      - bewsc_generative_zero_shot_en
+      - bewic_generative_zero_shot_en
+      - besls_generative_zero_shot_en
+      - bertewd_generative_zero_shot_en
+      - belacola_in_domain_generative_zero_shot_en
+      - belacola_out_of_domain_generative_zero_shot_en
+    metadata:
+      version: 1.0

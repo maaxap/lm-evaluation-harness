@@ -1,10 +1,22 @@
 group: bel_glue
 task:
-  - bewsc
-  - bewic
-  - besls
-  - bertewd
-  - belacola_in_domain
-  - belacola_out_of_domain
-metadata:
-  version: 1.0
+  - group: zero_shot_be
+    task:
+      - besls_zero_shot_be
+      - belacola_in_domain_zero_shot_be
+      - belacola_out_of_domain_zero_shot_be
+      - bewic_zero_shot_be
+      - bewsc_zero_shot_be
+      - bertewd_zero_shot_be
+    metadata:
+      version: 1.0
+  - group: zero_shot_en
+    task:
+      - besls_zero_shot_en
+      - belacola_in_domain_zero_shot_en
+      - belacola_out_of_domain_zero_shot_en
+      - bewic_zero_shot_en
+      - bewsc_zero_shot_en
+      - bertewd_zero_shot_en
+    metadata:
+      version: 1.0

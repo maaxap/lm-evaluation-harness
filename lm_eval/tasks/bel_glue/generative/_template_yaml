@@ -2,12 +2,8 @@ output_type: generate_until
 generation_kwargs:
   temperature: 0.0
   until:
-    - " "
-    - "\n"
-    - "\n\n"
-    - "</s>"
-    - "<|im_end|>"
     - "\n\nHuman:"
+doc_to_target: label
 test_split: test
 fewshot_split: validation
 fewshot_config:

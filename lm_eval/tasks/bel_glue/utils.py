@@ -1,32 +1,42 @@
+import json
 from collections import defaultdict
 
 
-UNER_PROMPT = """You are a NER model trained to label sequences using BIO tags. The entities you need to recognize are "LOC" for locations, "ORG" for organizations, "PER" for persons, and "OTH" for other entities. The input will be a list of words, and your task is to output a list with the corresponding tags. Use "B-" for the beginning of an entity, "I-" for inside an entity, and "O" for outside any entity. The output has to be a valid JSON list without any additional prefixes. Number of elements in the input and output lists has to be strictly the same. Strictly follow the output format.
+UNER_PROMPT = """Identify entities in Belarusian text. When asked about "чалавек", "арганізацыя", "месца", or "іншая іменаваная сутнасць", find the matching entity in the given text. Output entity the same as it is mentioned without any changes. Always provide an answer.
 
-Examples:
+What entity of type {label} is found in the following text?
+{text}
 
-Input: ["Apple", "is", "based", "in", "California", "."]
-Output: ["B-ORG", "O", "O", "O", "B-LOC", "O"]
+Entity of type {label}:"""
 
-Input: ["Barack", "Obama", "was", "born", "in", "Hawaii", "."]
-Output: ["B-PER", "I-PER", "O", "O", "O", "B-LOC", "O"]
-
-Task: Label the following sequence.
-
-Input: {tokens}
-Output:"""
+#
+# UNER_PROMPT = """Твая задача – знаходзіць іменаваныя сутнасці ў тэксце на беларускай мове. Калі пытаюць пра іменаваную сутнасць тыпу "чалавек", "арганізацыя", "месца" або "іншая іменаваная сутнасць", трэба знайсці адпаведную іменаваную сутнасць у дадзеным тэксце і вывесці як адказ. Заўсёды давай адказ.
+#
+# Якая іменаваная сутнасць тыпу {{label}} ёсць ў наступным тэксце?
+# {{text}}
+#
+# Іменаваная сутнасць тыпу {{label}}:
+# """
 
 
 def doc_to_text(doc):
-    tokens = doc["tokens"].split()
-    text = UNER_PROMPT.format(tokens=tokens)
+    text = doc["text"]
+    label = doc["label"]
+    text = UNER_PROMPT.format(text=text, label=label)
     return text
 
 
 def doc_to_target(doc):
-    labels = doc["labels"].split()
-    return [labels]
+    # TODO: dump the answers with json.dumps before loading to HF
+    # return json.loads(doc["answers"])
+    return eval(doc["answers"])
 
+
+def f():
+    pass
+
+
+# TO DELETE EVERYTHING BELOW
 
 # Source of the code below can be found here:
 # https://github.com/sighsmile/conlleval
